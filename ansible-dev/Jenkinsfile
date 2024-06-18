@@ -13,9 +13,20 @@ pipeline{
             sh 'curl -uadmin:AP8gcgmmset5jeYChTJYDN6XmDd -T\
              ansible-${BILD_ID}.zip\
               "http://ec2-54-152-252-25.compute-1.amazonaws.com:8081/artifactory/ansible/ansible-${BILD_ID}.zip"'
-              
+
               }
 
+          }
+          stage('publish to ansible server'){
+            steps{
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'AnsibleServer', \
+                transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: \
+                'ls', execTimeout: 120000, flatten: false, makeEmptyDirs: false, \
+                noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: \
+                '/home/ec2-user', remoteDirectorySDF: false, removePrefix: '', \
+                sourceFiles: 'ansible-${BUILD_ID}.zip')], usePromotionTimestamp: false, \
+                useWorkspaceInPromotion: false, verbose: false)])
+            }
           }
     }
 }
